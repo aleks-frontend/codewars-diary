@@ -1,0 +1,1974 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jasmine/3.6.0/jasmine.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/3.6.0/jasmine.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/3.6.0/jasmine-html.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/3.6.0/boot.min.js"></script>
+    <style>
+        html {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .board {
+            display: grid;
+            grid-template-areas:
+                'onehundred ninetynine ninetyeight ninetyseven ninetysix ninetyfive ninetyfour ninetythree ninetytwo ninetyone'
+                'eightyone eightytwo eightythree eightyfour eightyfive eightysix eightyseven eightyeight eightynine ninety'
+                'eighty seventynine seventyeight seventyseven seventysix seventyfive seventyfour seventythree seventytwo seventyone'
+                'sixtyone sixtytwo sixtythree sixtyfour sixtyfive sixtysix sixtyseven sixtyeight sixtynine seventy'
+                'sixty fiftynine fiftyeight fiftyseven fiftysix fiftyfive fiftyfour fiftythree fiftytwo fiftyone'
+                'fortyone fortytwo fortythree fortyfour fortyfive fortysix fortyseven fortyeight fortynine fifty'
+                'forty thirtynine thirtyeight thirtyseven thirtysix thirtyfive thirtyfour thirtythree thirtytwo thirtyone'
+                'twentyone twentytwo twentythree twentyfour twentyfive twentysix twentyseven twentyeight twentynine thirty'
+                'twenty nineteen eighteen seventeen sixteen fifteen fourteen thirteen twelve eleven'
+                'one two three four five six seven eight nine ten'
+            ;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+            margin-bottom: 20px;
+            width: 400px;
+            height: 400px;
+            background: url(https://raw.githubusercontent.com/adrianeyre/codewars/master/Ruby/Authored/snakesandladdersboard.jpg) no-repeat;
+            background-size: 100% 100%;
+        }
+
+        .board__player {
+            grid-area: one;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            font-size: 30px;
+            color: #fff;
+            background: red;
+        }
+
+        .board__player--2 {
+            background: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Playground</h1>
+    <div>
+        <h2>Bill the user</h2>
+        <button onclick="billAleksOnce('Aco', '$100')">Bill Aco</button>
+        <button onclick="billElodOnce('Elod', '$1000')">Bill Elod</button>
+    </div>
+    <hr />
+    <div>
+        <h2>Greet the user</h2>
+        <button onclick="greetCounter('Dragana')">Greet User</button>
+    </div>
+    <hr />
+    <div>
+        <h2>Say A/B</h2>
+        <button onclick="alt()">Say A / B</button>
+    </div>
+    <button class="test">test</button>
+    <div class="board">
+        <div class="board__player board__player--1">1</div>
+        <div class="board__player board__player--2">2</div>
+    </div>
+    <div class="board__label">Player 1 turn</div>
+    <button style="margin-bottom: 20px;">Throw Dice!</button>
+    <script>
+        // Make tree - recursion
+        const categories = [
+            { id: 'animals', parent: null },
+            { id: 'mammals', parent: 'animals' },
+            { id: 'cats', parent: 'mammals' },
+            { id: 'dogs', parent: 'mammals' },
+            { id: 'chihuaua', parent: 'dogs' },
+            { id: 'labrador', parent: 'dogs' },
+            { id: 'long hair', parent: 'labrador' },
+            { id: 'cupavi', parent: 'long hair' },
+            { id: 'short hair', parent: 'labrador' },
+            { id: 'persian', parent: 'cats' },
+            { id: 'siamese', parent: 'cats' },
+        ];
+
+        const makeTree = (categories, parent) => {
+            let node = {};
+
+            categories
+                .filter(c => c.parent === parent)
+                .forEach(c => {
+                    node[c.id] = makeTree(categories, c.id)
+                });
+
+            if (Object.keys(node).length === 0) return null;
+            return node;
+        };
+
+        // console.log(JSON.stringify(
+        //     makeTree(categories, null),
+        //     null, 2));]
+
+        const fact = (n) => {
+            if (n < 0) {
+                console.error('Negative numbers are not allowed');
+                return n;
+            }
+
+            if (n === 0) {
+                return 1;
+            } else {
+                return n * fact(n - 1);
+            }
+        };
+
+        const newCounter = () => {
+            let count = 0;
+            return () => ++count;
+        }
+
+        // console.log(nc1())
+        // console.log(nc1())
+        // console.log(nc1())
+        // console.log(nc1()); 
+
+        // Bill the user - Higher order functions
+        const billTheUser = (user, bill) => {
+            console.log(`billing the ${user} , ${bill}`);
+        }
+
+        const alertError = (user) => {
+            console.error(`${user} was already billed.`);
+        }
+
+        const once = (fn1, fn2) => {
+            let done = false;
+            return (...args) => {
+                if (!done) {
+                    done = true;
+                    fn1(...args)
+                } else {
+                    fn2(...args)
+                }
+            };
+        };
+
+        const billAleksOnce = once(billTheUser, alertError);
+        const billElodOnce = once(billTheUser, alertError);
+
+        // This Many Times - extended once() function
+        const greetUser = (user) => console.log(`Hello my dear ${user}.`);
+
+        const thisManyTimes = (fn, maxCount) => {
+            let counter = 0;
+            return (...args) => {
+                if (counter < maxCount) {
+                    counter++;
+                    fn(...args);
+                } else {
+                    console.error(`Function was called more than ${maxCount} times.`);
+                }
+            }
+        };
+
+        const greetCounter = thisManyTimes(greetUser, 3);
+
+        // Alternator - Higher order functions - practise
+        const sayA = () => console.log('Say A');
+        const sayB = () => console.log('Say B');
+
+        const alternator = (fnA, fnB) => {
+            let callA = true;
+            return () => {
+                if (callA) {
+                    callA = false;
+                    fnA();
+                } else {
+                    callA = true;
+                    fnB();
+                }
+            }
+        }
+
+        const alt = alternator(sayA, sayB);
+
+        // Testing 'pointfree/tacit' style
+        const obj = {
+            someMethod: function (text = 'some text') {
+                console.log(`text: ${text}`);
+            }
+        }
+
+        // function doSomeMethod(data) {
+        //     return obj.someMethod(data);
+        // }
+
+        const doSomeMethod = (data) => obj.someMethod.call(obj, data);
+
+        // DoAction testing
+
+        const initialState = {};
+
+        const dispatchTable = {
+            // fun: () => 'test'
+        }
+
+        const doAction = (state = initialState) => (dispatchTable['fun'] && dispatchTable.fun()) || state
+        // console.log(doAction())
+
+        // Fibonaci code
+        const cache = [];
+        function fib(n) {
+            if (cache[n] === undefined) {
+                if (n === 0) {
+                    cache[0] = 0;
+                } else if (n === 1) {
+                    cache[1] = 1;
+                } else {
+                    cache[n] = fib(n - 2) + fib(n - 1);
+                }
+            }
+            return cache[n];
+        };
+
+        // console.log(fib(10))
+        // console.log(cache);
+
+        const shuffle2 = arr => {
+            const len = arr.length;
+
+            for (let i = 0; i < len - 1; i++) {
+                let r = Math.floor(Math.random() * (len - i));
+                [arr[i], arr[i + r]] = [arr[i + r], arr[i]];
+            }
+
+            return [...arr, 'a'];
+        };
+
+        // let xxx = [1, 2, 3, 4, 5];
+        // console.log(shuffle(xxx));
+
+        const fib4 = (n, a = 0, b = 1) => (n === 0 ? a : fib4(n - 1, b, a + b));
+
+        // fib4(2) ==> fib4(1, 1, 1) ==> fib4(0, 1, 2) ==> 1
+        // fib4(3, 0, 1) ==> fib4(2, 1, 1) ==> fib4(1, 1, 2) ==> fib4(0, 2, 3) ==> 2
+
+        // console.log(fib4(3));
+
+        const average3 = arr => {
+            const sumCountObj = arr.reduce(
+                (acum, value) => {
+                    return { sum: acum.sum + value, count: acum.count + 1 };
+                },
+                { sum: 0, count: 0 }
+            );
+
+            return sumCountObj.sum / sumCountObj.count;
+        };
+
+        const average4 = arr => {
+            const sumCountArr = arr.reduce(
+                (acum, value) => {
+                    return [acum[0] + value, acum[1] + 1]
+                }, [0, 0]
+            );
+
+            return sumCountArr[0] / sumCountArr[1];
+        }
+
+        const testArr = [1, 2, 3, 4];
+
+        // console.log(average3(testArr));
+        // console.log(average4(testArr));
+
+        // Experimental string reverse function with reduceRight()
+        const reverseString = str => {
+            return str.split('').reduceRight((acum, value) => acum + value);
+        };
+
+        // console.log(reverseString('aco'))
+
+        // MAP experiments
+
+        const range = (start, stop) => new Array(stop - start).fill(0).map((_value, index) => start + index);
+
+        // console.log(range(1, 4));
+        // range(3, 8) ===> [3, 4, 5, 6, 7]
+
+        const factorialByRange = (n) => range(1, n + 1).reduce((acum, value) => acum * value, 1);
+        // factorialByRange(3) ===> 6
+
+        // console.log(factorialByRange(3));
+
+        const alphabet = range('A'.charCodeAt(), 'Z'.charCodeAt() + 1).map(x => String.fromCharCode(x));
+        // console.log(alphabet);
+
+        // Custom map() function
+        const myMap = (arr, fn) => arr.reduce((acum, value) => {
+            // acum.push(fn(value));
+            // return acum;
+            // return acum.concat(fn(value))
+            return [...acum, fn(value)];
+        }, []);
+
+        const dup = x => x * 2;
+
+        const dupArr = [1, 2, 3];
+
+        // console.log(dupArr.map(dup));
+        // console.log(myMap(dupArr, dup));
+
+        // flat() and flatMap()
+
+        const distances = [
+            [0, 2, 22, 30],
+            [20, 2, 52, 30],
+            [0, 2, 72, 30],
+            [0, 2, 99, 30],
+            [0, 2, 22, 30]
+        ];
+
+        const maxDist1 = Math.max(...distances.flat());
+        const maxDist2 = distances.flat().reduce((acum, value) => Math.max(acum, value), 0);
+        // console.log(maxDist2);
+
+        const names = [
+            'Winston Spencer Churchil',
+            'Socrates',
+            'Plato',
+            'Abraham Lincoln',
+            'Toma Zdravkovic'
+        ];
+
+        // const lastNames = names.map(fullName => fullName.split(' ').splice(1)).flat();
+        const lastNames = names.flatMap((x) => {
+            const s = x.split(' ');
+            return s.length === 1 ? [] : s.splice(1);
+        })
+
+        const lastNames2 =
+            names
+                .filter(x => x.split(' ').length > 1)
+                .map(y => y.split(' ').splice(1))
+                .reduce((acum, value) => [...acum, ...value], []);
+        // console.log(lastNames2);
+
+        // ['Spencer', 'Churchil', 'Lincoln', 'Zdravkovic']
+
+
+        // Emulating flat() and flatMap()
+        const flatAll = arr => arr.reduce((acum, value) => acum.concat(Array.isArray(value) ? flatAll(value) : value), []);
+
+        // const flatOne = arr => [].concat(...arr);
+        const flatOne = arr => arr.reduce((acum, value) => acum.concat(value), []);
+
+        const multiLevelArr = [1, 2, [3, 4, [5, 6, [7, 8, 9]]]];
+
+        // console.log(flatOne(multiLevelArr));
+
+        const flatN = (arr, n = 1) => {
+            if (n === Infinity) {
+                return flatAll(arr);
+            } else {
+                let result = arr;
+                range(0, n).forEach(() => {
+                    result = flatOne(result);
+                });
+
+                return result;
+            }
+        };
+
+        const flatN2 = (arr, n = 1) => {
+            if (n === Infinity) {
+                return flatAll(arr);
+            } else {
+                if (n === 1) {
+                    return flatOne(arr);
+                } else {
+                    return flatN2(flatOne(arr), n - 1);
+                }
+            }
+        };
+
+        const flatN3 = (arr, n = 1) =>
+            n === Infinity
+                ? flatAll(arr)
+                : n === 1
+                    ? flatOne(arr)
+                    : flatN3(flatOne(arr), n - 1);
+
+        // console.log(flatN3(multiLevelArr, 2));
+
+        // Polyfil for flat() function
+
+        if (!Array.prototype.myFlat) {
+            Array.prototype.myFlat = function (n = 1) {
+                this.flatAllX = () => this.reduce((acum, value) => acum.concat(Array.isArray(value) ? value.myFlat(Infinity) : value), []);
+                this.flatOneX = () => [].concat(...this);
+
+                return n === Infinity
+                    ? this.flatAllX()
+                    : n === 1
+                        ? this.flatOneX()
+                        : this.flatOneX().myFlat(n - 1);
+            }
+        }
+
+        // console.log(multiLevelArr.myFlat(1));
+
+        // Object Copy function
+        const objCopy = (obj) => {
+            let copy = Object.create(Object.getPrototypeOf(obj));
+
+            Object.getOwnPropertyNames(obj).forEach(prop => {
+                return Object.defineProperty(
+                    copy,
+                    prop,
+                    Object.getOwnPropertyDescriptor(obj, prop)
+                )
+            });
+
+            return copy;
+        }
+
+        const acoObj = { name: 'aco', lastName: 'gojkovic' };
+        const acoCopy = objCopy(acoObj);
+
+        // console.log(acoCopy);
+
+        // making custom none() array method
+        Array.prototype.none = function (fn) {
+            return this.every(v => !fn(v));
+        }
+
+        const isPositive = (num) => num > 0;
+        const numArray = [-1, -2, -3, -4];
+
+        // console.log(numArray.none(isPositive));
+
+        // Testing ASYNC functions
+        const fakeAPI = (delay, value) => new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(value)
+            }, delay)
+        });
+
+        const useResult = x => console.log(new Date().getSeconds(), x);
+
+        // (async () => {
+        //     // console.log('START');
+        //     // console.log(new Date().getSeconds());
+        //     // const result = await fakeAPI(2000, 'aco');
+        //     // useResult(result)
+        //     // console.log('END');
+        // })();    
+
+        // (async () => {
+        //     console.log('SEQUENCE START');
+        //     const value1 = await fakeAPI(1000, '1');
+        //     useResult(value1);
+        //     const value2 = await fakeAPI(2000, '2');
+        //     useResult(value2);
+        //     const value3 = await fakeAPI(3000, '3');
+        //     useResult(value3);
+        //     const value4 = await fakeAPI(4000, '4');
+        //     useResult(value4);
+        //     console.log('SEQUENCE END');
+        // })();
+
+        // (async () => {
+        //     console.log('start');
+        //     [1, 2, 3, 4].forEach(async (n) => {
+        //         const x = await fakeAPI(n * 1000, n);
+        //         useResult(x);
+        //     });
+        //     console.log('end');
+        // })();
+
+        // (async () => {
+        //     for (let i = 1; i < 5; i++) {
+        //         const x = await fakeAPI(i * 1000, i);
+        //         useResult(x);
+        //     }
+        // })();
+
+        // const forEachAsync = (arr, fn) => {
+        //     return arr.reduce((promise, value) => {
+        //         console.log(promise);
+        //         return promise.then(() => fn(value))
+        //     }, Promise.resolve());
+        // };
+
+        // (async () => {
+        //     console.log('START FOREACH VIA REDUCE');
+        //     await forEachAsync([1, 2, 3, 4], async (n) => {
+        //         const x = await fakeAPI(n * 1000, n);
+        //         useResult(x);
+        //     });
+        //     console.log('END FOREACH VIA REDUCE')
+        // }) ();
+
+        const mapAsync = (arr, fn) => Promise.all(arr.map(fn));
+        Array.prototype.mapAsync = function (fn) {
+            return Promise.all(this.map(fn))
+        };
+
+        // (async () => {
+        //     console.log('START');
+
+        //     const mapped = await mapAsync([1, 2, 3, 4], async n => {
+        //         const x = await fakeAPI(n * 1000, n);
+        //         return x;
+        //     });
+
+        //     useResult(mapped);
+        //     console.log('END')
+        // })();
+
+        // (async () => {
+        //     console.log('START');
+
+        //     const mapped = await [1, 2, 3, 4].mapAsync(async n => {
+        //         const x = await fakeAPI(n * 1000, n);
+        //         return x;
+        //     });
+
+        //     useResult(mapped);
+        //     console.log('END')
+        // })();
+
+        // const filterAsync = (arr, fn) => mapAsync(arr, fn).then((arr2) => arr.filter((v, i) => Boolean(arr2[i])));
+        // const fakeFilter = (value) => {
+        //     return new Promise(resolve => {
+        //         return setTimeout(() => resolve(value % 2 === 0), 1000);
+        //     });
+        // };
+
+        // (async () => {
+        //     console.log('Start');
+        //     const filtered = await filterAsync([1, 2, 3, 4], async (n) => {
+        //         const x = await fakeFilter(n);
+        //         return x;
+        //     });
+
+        //     useResult(filtered);
+        //     console.log('END filter')
+        // })();
+
+        // const someArray = [0,1,2,3];
+        // console.log(someArray.filter(Boolean));
+
+        /*** Generating HTML without join()  ***/
+        const characters = [
+            { name: 'Fred', plays: 'chess' },
+            { name: 'Barney', plays: 'bowling' },
+            { name: 'Wilma', plays: 'chess' },
+            { name: 'Betty', plays: 'football' }
+        ];
+
+        const output =
+            characters
+                .filter((x) => x.plays === 'chess')
+                .map(y => `<li>${y.name}</li>`)
+                .reduce((acum, value, i, arr) => {
+                    const onTheLastItem = arr.length - 1 === i;
+                    return acum + '\n\t\t' + value + (onTheLastItem ? `\n\t</ul>\n</div>` : '');
+                }, `<div>\n\t<ul>`);
+
+        // console.log(output);
+
+        /*** range() function extending ***/
+        const rangeAscDesc = (start, stop) => {
+            const isAsc = start < stop;
+
+            if (isAsc) {
+                return new Array(stop - start).fill(0).map((_value, index) => start + index);
+            } else {
+                return new Array(start - stop).fill(0).map((_value, index) => stop + index).reverse();
+            }
+        }
+
+        const rangeStep = (start, stop, step = 1) => {
+            const isAsc = start < stop;
+
+            if (isAsc) {
+                return new Array(stop - start)
+                    .fill(0)
+                    .map((_value, index) => start + step * index)
+                    .filter(x => x < stop);
+            } else {
+                return new Array(start - stop)
+                    .fill(0)
+                    .map((_value, index) => start - step * index)
+                    .filter(x => x > stop)
+                reverse();
+            }
+        };
+
+        // console.log(rangeStep(10, 0, 3));
+
+        /*** DATA URIs - dataToCsv() ***/
+        const myData = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]];
+        const dataToCsv = (data) => data.reduce((acum, value) => acum + value + '\\n', '');
+
+        // console.log(dataToCsv(myData));
+
+        /*** Higher order functions ***/
+
+        function subtract(a, b) {
+            b = changeSign(b);
+            return a + b;
+        };
+
+        function changeSign(c) {
+            return -c;
+        }
+
+        /*** Memoization ***/
+        const myPut = (text, name, tStart, tEnd) => console.log(`${name} - ${text} ${tEnd - tStart} ms`);
+        const myGet = () => performance.now();
+
+        const addTiming = (fn, getTime = myGet, output = myPut) => (...args) => {
+            let tStart = getTime();
+
+            try {
+                const valueToReturn = fn(...args);
+                output('normal exit', fn.name, tStart, getTime());
+                return valueToReturn;
+            } catch (thrownError) {
+                output('exception thrown', fn.name, tStart, getTime());
+                throw thrownError;
+            }
+        };
+
+        subtract = addTiming(subtract);
+
+        const testFib = n => fib(n);
+
+        // console.log(addTiming(testFib)(145));
+        // console.log(addTiming(testFib)(140));
+        // console.log(addTiming(testFib)(135));
+
+        const memoize = fn => {
+            let cache = {};
+            console.log(cache);
+            return x => (cache[x] ? cache[x] : (cache[x] = fn(x)));
+        };
+
+        // fib = memoize(fib);
+
+        // addTiming(fib)(45);
+        // addTiming(fib)(40);
+        // addTiming(fib)(35);
+
+        const getField = attr => obj => obj[attr];
+
+        const getName = getField('name');
+
+        // const names = characters.map(x => x.name);
+        const names2 = characters.map(getName);
+        const names3 = characters.map(getField('name'));
+        // console.log(names3);
+
+        /*** Demethodisation ***/
+        const demethodize1 = fn => (arg0, ...args) => fn.apply(arg0, args); // no need to spread args because apply expects an array as a second argument
+        const demethodize2 = fn => (arg0, ...args) => fn.call(arg0, ...args); // we need to spread args because call expects a list or arguments (NOT ARRAY)
+        const demethodize3 = fn => (...args) => fn.bind(...args)();
+
+        const map = demethodize1(Array.prototype.map);
+        const toUpperCase = demethodize1(String.prototype.toUpperCase);
+        const replaceCharwith = char => x => x === char ? '999' : x;
+        const replaceAwith = replaceCharwith('a');
+        const replaceFwith = replaceCharwith('f');
+
+        const name = 'functional';
+        const result = name.split('').map(x => x.toUpperCase());
+
+
+        const result2 = map(name, replaceFwith);
+
+        // console.log(result2);
+
+        /*** Heros Comparing game ***/
+
+        const findOptimum = fn => arr => arr.reduce(fn);
+
+        const compareHeroes = (card1, card2, index) => {
+            const oneIfBigger = (x, y) => (x > y ? 1 : 0);
+            const wins1 =
+                oneIfBigger(card1.strength, card2.strength) +
+                oneIfBigger(card1.powers, card2.powers) +
+                oneIfBigger(card1.tech, card2.tech);
+            const wins2 =
+                oneIfBigger(card2.strength, card1.strength) +
+                oneIfBigger(card2.powers, card1.powers) +
+                oneIfBigger(card2.tech, card1.tech);
+
+            return wins1 > wins2 ? card1 : card2;
+        };
+
+        function Hero(n, s, p, t) {
+            this.name = n;
+            this.strength = s;
+            this.powers = p;
+            this.tech = t;
+        }
+
+        const codingLeagueOfAmerica = [
+            new Hero('Forcefull', 20, 15, 2),
+            new Hero('Electrico', 12, 21, 8),
+            new Hero('Speediest', 8, 11, 4),
+            new Hero('TechWiz', 6, 16, 30)
+        ];
+
+        const findBestHero = findOptimum(compareHeroes);
+        // console.log(findBestHero(codingLeagueOfAmerica));
+
+        const randomizer = (...fns) => {
+            let prevIndex = null;
+            const getFnIndex = () => {
+                const index = Math.floor(Math.random() * fns.length);
+
+                return (index === prevIndex ? getFnIndex() : index);
+            }
+
+            return () => {
+                const fnIndex = getFnIndex();
+                prevIndex = fnIndex;
+                return fns[fnIndex]();
+            }
+        };
+
+        const helloAco = () => console.log('hello aco');
+        const helloDragana = () => console.log('hello dada');
+        const helloPavle = () => console.log('hello pajo');
+        const helloVesna = () => console.log('hello vesna');
+
+        const randomMessage = randomizer(helloAco, helloDragana, helloVesna, helloPavle);
+        // randomMessage();
+
+        // const getField = attr => obj => obj[attr];
+        const setField = attr => (obj, value) => ({ ...obj, [attr]: value });
+
+        const setName = setField('name');
+        const setLast = setField('last');
+        const acoObj2 = { name: 'aco', last: 'gojkovic' };
+
+        let acoCopy2 = setName(acoObj2, 'aleksandar');
+        acoCopy2 = setLast(acoCopy2, 'gojnikovic');
+        // console.log(acoObj2, acoCopy2);
+
+        const sum = (x, y) => {
+            if (x !== undefined && y !== undefined) {
+                return x + y;
+            } else if (y === undefined) {
+                return (z) => sum(x, z);
+            } else {
+                return sum;
+            }
+        };
+
+        const make3 = (a, b, c) => String(100 * a + 10 * b + c);
+
+        const curryBind = fn => {
+            return fn.length === 0 ? fn() : p => curryBind(fn.bind(null, p));
+        }
+
+        const f1 = curryBind(make3);
+        const f2 = f1(1);
+        const f3 = f2(2);
+        const f4 = f3(8);
+
+        // console.log(f4);
+
+        const sumFull = (a, b, c) => a + b + c;
+        const sumFull1 = sumFull.bind(null, 1);
+        const sumFull2 = sumFull1.bind(null, 2);
+        const sumFull3 = sumFull2.bind(null, 3);
+
+        // Partial Currying            
+
+        const nonsense = (a, b, c, d, e) => `${a}/${b}/${c}/${d}/${e}`;
+
+        const partialByEval = (fn, ...args) => {
+            const rangeArgs = range(0, fn.length); // [0, 1, 2, 3, 4]
+
+            const leftList = rangeArgs
+                .map(v => args[v] === undefined ? `x${v}` : null)
+                .filter(v => !!v)
+                .join(',');
+
+            const rightList = rangeArgs
+                .map(v => args[v] === undefined ? `x${v}` : args[v])
+                .join(',');
+
+            return eval(`(${leftList}) => ${fn.name}(${rightList})`);
+        };
+
+        const fix2and5 = partialByEval(
+            nonsense,
+            undefined,
+            22,
+            undefined,
+            undefined,
+            55
+        );
+
+        // const fix2and5 = (x1, x3, x4) => nonsense(x1, 2, x3, x4, 5);
+
+        const partialByClosure = (fn, ...args) => {
+            const partialize = (...args1) => (...args2) => {
+                for (let i = 0; i < args1.length; i++) {
+                    if (args1[i] === undefined) {
+                        args1[i] = args2.shift();
+                    }
+                }
+                const allParams = [...args1, ...args2];
+                return (allParams.includes(undefined) || allParams.length < fn.length ? partialize : fn)(...allParams);
+            };
+
+            return partialize(...args);
+        };
+
+        // const arr1 = [1];
+        // const arr2 = [3, 4, 5];
+
+        const fn1 = partialByClosure(make3, undefined, 4, undefined);
+        const fn2 = fn1(7);
+        const fn3 = fn2(8);
+
+        /*** Partial Currying with Bind ***/
+        const partialCurryingByBind = fn =>
+            fn.length === 0
+                ? fn()
+                : (...pp) => partialCurryingByBind(fn.bind(null, ...pp));
+
+        const partialCurryingByBind2 = (fn, len = fn.length) =>
+            len === 0
+                ? fn()
+                : (...pp) => partialCurryingByBind2(fn.bind(null, ...pp), len - [...pp].length);
+
+        const sum2 = (a, b, c) => a + b + c;
+        const sum3 = (...nums) => nums.reduce((acum, value) => acum + value, 0);
+
+        const partialyCurriedByBindSum = partialCurryingByBind(sum2)(1)(2)(3);
+        const partialyCurriedByBindSum2 = partialCurryingByBind2(sum3, 3)(1)(2, 3);
+
+        /*** Partial Currying with Clossures ***/
+        const partialCurryingByClossure = fn => {
+            const curryize = (...args1) => (...args2) => {
+                const allParams = [...args1, ...args2];
+
+                return (allParams.length < fn.length ? curryize : fn)(...allParams);
+            }
+
+            return curryize();
+        };
+
+        const partialCurryingByClossure2 = (fn, len = fn.length) => {
+            const curryize = (...args1) => (...args2) => {
+                const allParams = [...args1, ...args2];
+
+                return (allParams.length < len ? curryize : fn)(...allParams);
+            }
+
+            return curryize();
+        };
+
+        const partialyCurriedByClosure1 = partialCurryingByClossure(sum2);
+        const partialyCurriedByClosure2 = partialCurryingByClossure2(sum3, 4);
+
+
+        const sumMany = total => (num) => num === undefined ? total : sumMany(total + num);
+        let result99 = sumMany(1)(2)(3)(4)();
+
+        // console.log(result99);
+
+        const applyStyle = styleTag => string => `<${styleTag}>${string}</${styleTag}>`;
+        const makeBold = applyStyle('b');
+
+        // console.log(makeBold('Montevideo')); // '<b>Montevideo</b>'
+        // console.log(applyStyle('u')('underlined text'));
+
+        Function.prototype.curry = function () {
+            return this.length === 0 ? this() : p => this.bind(this, p).curry();
+        }
+
+        const sum99 = (a, b, c) => a + b + c;
+        const curriedSum99 = sum99.curry();
+
+        // unCurry custom function
+
+        const make3New = (a, b, c) => String(100 * a + 10 * b + c);
+        // const make3NewC = make3New.curry();
+        const make3NewC = a => b => c => make3New(a, b, c);
+
+        // const uncuried = (x1, x2, x3) => make3NewC(x1)(x2)(x3);
+
+
+        const uncurry = (fn, arity) => {
+            const arrityArr = new Array(arity).fill(0);
+
+            return eval(
+                `(${arrityArr
+                    .map((_x, i) => `x${i}`)
+                    .join(',')}) => ${fn.name}${arrityArr
+                        .map((_x, i) => `(x${i})`)
+                        .join('')
+                }`
+            );
+        };
+
+        const remake3 = uncurry(make3NewC, 3);
+
+        const what = who => (...why) => {
+            return who.length <= why.length ? who(...why) : (...when) => what(who)(...why, ...when);
+        };
+
+        const alt3 = what(make3New);
+
+        const uniqueInOrder = iterable => [...iterable].filter((item, index) => item !== iterable[index - 1]);
+
+        function persistence(num) {
+            let count = 0;
+
+            const innerFun = (number, initialCall = false) => {
+                const digits = number.toString().split('');
+
+                if (digits.length === 1 && initialCall) return 0;
+
+                if (digits.length !== 1) {
+                    const total = digits.reduce((acum, value) => acum * value, 1);
+                    count++;
+                    return innerFun(total);
+                } else {
+                    return count;
+                }
+            }
+
+            return innerFun(num, true);
+        }
+
+
+        // function count(string) {
+        //     const result = {};
+
+        //     for (const char of [...string]) {
+        //         result[char] = (result[char] || 0) + 1;
+        //     }
+
+        //     return result;
+        // }
+
+        // Populating an object via reduce
+        const count = string => {
+            return [...string].reduce((acum, value) => {
+                return {
+                    ...acum,
+                    [value]: (acum[value] || 0) + 1
+                }
+            }, {})
+        };
+
+        function nbMonths(startPriceOld, startPriceNew, savingperMonth, percentLossByMonth) {
+            let savedFunds = 0;
+            let monthCount = 0;
+            let currentPriceNew = startPriceNew;
+            let currentPriceOld = startPriceOld;
+
+            // Helpper function for getting the monthly money loss
+            const getMonthlyLoss = price => price / 100 * percentLossByMonth;
+
+            const innerFun = () => {
+                let availableFunds = savedFunds + currentPriceOld;
+
+                if (currentPriceNew > availableFunds) {
+                    if (!(++monthCount % 2)) percentLossByMonth += 0.5;
+
+                    currentPriceOld -= getMonthlyLoss(currentPriceOld);
+                    currentPriceNew -= getMonthlyLoss(currentPriceNew);
+
+                    savedFunds += savingperMonth;
+
+                    return innerFun();
+                } else {
+                    return [monthCount, Math.round(availableFunds - currentPriceNew)];
+                }
+            };
+
+            return innerFun();
+        }
+
+        function sumDigPow(a, b) {
+            const range = [];
+
+            if (a < b) {
+                for (let i = a; i <= b; i++) {
+                    range.push(i);
+                }
+            } else {
+                console.error('error: first argument must be smaller than the second one.');
+                return;
+            }
+
+            const result = range.filter(num => {
+                const digits = num.toString().split('');
+                const total = digits.reduce((acum, value, index) => acum + Math.pow(value, index + 1), 0);
+
+                return (Number(total) === num);
+            });
+
+            return result;
+        }
+
+        // console.log(sumDigPow(1, 10));
+
+        function streetFighterSelection(fighters, position, moves) {
+            let [yPos, xPos] = position;
+
+            return moves.map(move => {
+                switch (move) {
+                    case 'up':
+                        yPos = yPos === 0 ? 0 : --yPos;
+                        return fighters[yPos][xPos];
+                    case 'down':
+                        yPos = yPos === fighters.length - 1 ? yPos : ++yPos;
+                        return fighters[yPos][xPos];
+                    case 'left':
+                        xPos = xPos === 0 ? fighters[0].length - 1 : --xPos;
+                        return fighters[yPos][xPos];
+                    case 'right':
+                        xPos = xPos === fighters[0].length - 1 ? 0 : ++xPos;
+                        return fighters[yPos][xPos];
+                    default:
+                        return fighters[yPos][xPos];
+                }
+            });
+        }
+
+        fighters = [
+            ["Ryu", "E.Honda", "Blanka", "Guile", "Balrog", "Vega"],
+            ["Ken", "Chun Li", "Zangief", "Dhalsim", "Sagat", "M.Bison"],
+            ["Pancev", "Prosinecki", "Savicevic", "Belodedic", "Jugovic", "Mihajlovic"]
+        ];
+
+        moves = ['up', 'left', 'right', 'left', 'left', 'down', 'down', 'right', 'right'];
+
+        // console.log(streetFighterSelection(fighters, [0, 0], moves));
+
+        class Person {
+            constructor(name, lastName, age) {
+                this.name = name;
+                this.lastName = lastName;
+                this.age = age;
+            }
+
+            sayMyName() {
+                console.log(`My name is ${this.name}!`);
+            }
+
+            makeMeOlder() {
+                this.age = this.age + 1;
+            }
+        }
+
+        class SnakesLadders {
+            constructor() {
+                this.players = {
+                    1: {
+                        position: 0,
+                        node: document.querySelector('.board__player--1')
+                    },
+                    2: {
+                        position: 0,
+                        node: document.querySelector('.board__player--2')
+                    }
+                }
+                this.activePlayerIndex = 1;
+                this.gameOver = false;
+            }
+
+            play(die1, die2) {
+                const dieTotal = die1 + die2;
+                const activePlayer = this.players[this.activePlayerIndex];
+                const ladders = { 2: 38, 7: 14, 8: 31, 15: 26, 28: 84, 21: 42, 36: 44, 51: 67, 71: 91, 78: 98, 87: 94 };
+                const snakes = { 16: 6, 49: 11, 62: 19, 46: 25, 74: 53, 64: 60, 89: 68, 95: 75, 99: 80, 92: 88 };
+                let message = '';
+
+                // Checking if provided numbers total is greater than 12
+                if (dieTotal > 12) return 'Greater Numbers than 6 are now allowed!';
+
+                // Updating active player's position
+                activePlayer.position += dieTotal;
+
+                // Checking if other player already won
+                if (this.gameOver) return 'Game over!';
+
+                // Checking if over finish
+                if (activePlayer.position > 100) activePlayer.position = 100 - (activePlayer.position - 100);
+
+                // Checking if player stepped on a ladder
+                if (ladders[activePlayer.position]) activePlayer.position = ladders[activePlayer.position];
+
+                // Checking if player stepped on snake's head
+                if (snakes[activePlayer.position]) activePlayer.position = snakes[activePlayer.position];
+
+                // Generating the message
+                if (activePlayer.position === 100) {
+                    this.gameOver = true;
+                    message = `Player ${this.activePlayerIndex} Wins!`;
+                    activePlayer.node.style.gridArea = 'onehundred';
+                } else {
+                    message = `Player ${this.activePlayerIndex} is on square ${activePlayer.position}`;
+                    activePlayer.node.style.gridArea = numberPairs[activePlayer.position];
+                }
+
+                // Checking if equal dice numbers and switching the current player
+                if (die1 !== die2) this.activePlayerIndex = this.activePlayerIndex === 1 ? 2 : 1;
+
+                return message;
+            }
+
+            // Extra Feature - have fun a play for real :)
+            getRandomDieNum() {
+                return Math.floor(Math.random() * 6) + 1;
+            }
+
+            throwDice() {
+                const die1 = this.getRandomDieNum();
+                const die2 = this.getRandomDieNum();
+
+                console.log(`You got: ${die1} and ${die2}.`);
+
+                return this.play(die1, die2);
+            }
+        }
+
+        const game = new SnakesLadders();
+        const numbers = [
+            'one',
+            'two',
+            'three',
+            'four',
+            'five',
+            'six',
+            'seven',
+            'eight',
+            'nine',
+            'ten',
+            'eleven',
+            'twelve',
+            'thirteen',
+            'fourteen',
+            'fifteen',
+            'sixteen',
+            'seventeen',
+            'eighteen',
+            'nineteen',
+            'twenty',
+            'twentyone',
+            'twentytwo',
+            'twentythree',
+            'twentyfour',
+            'twentyfive',
+            'twentysix',
+            'twentyseven',
+            'twentyeight',
+            'twentynine',
+            'thirty',
+            'thirtyone',
+            'thirtytwo',
+            'thirtythree',
+            'thirtyfour',
+            'thirtyfive',
+            'thirtysix',
+            'thirtyseven',
+            'thirtyeight',
+            'thirtynine',
+            'forty',
+            'fortyone',
+            'fortytwo',
+            'fortythree',
+            'fortyfour',
+            'fortyfive',
+            'fortysix',
+            'fortyseven',
+            'fortyeight',
+            'fortynine',
+            'fifty',
+            'fiftyone',
+            'fiftytwo',
+            'fiftythree',
+            'fiftyfour',
+            'fiftyfive',
+            'fiftysix',
+            'fiftyseven',
+            'fiftyeight',
+            'fiftynine',
+            'sixty',
+            'sixtyone',
+            'sixtytwo',
+            'sixtythree',
+            'sixtyfour',
+            'sixtyfive',
+            'sixtysix',
+            'sixtyseven',
+            'sixtyeight',
+            'sixtynine',
+            'seventy',
+            'seventyone',
+            'seventytwo',
+            'seventythree',
+            'seventyfour',
+            'seventyfive',
+            'seventysix',
+            'seventyseven',
+            'seventyeight',
+            'seventynine',
+            'eighty',
+            'eightyone',
+            'eightytwo',
+            'eightythree',
+            'eightyfour',
+            'eightyfive',
+            'eightysix',
+            'eightyseven',
+            'eightyeight',
+            'eightynine',
+            'ninety',
+            'ninetyone',
+            'ninetytwo',
+            'ninetythree',
+            'ninetyfour',
+            'ninetyfive',
+            'ninetysix',
+            'ninetyseven',
+            'ninetyeight',
+            'ninetynine',
+            'onehundred'
+        ];
+        const numberPairs = {
+            1: 'one',
+            2: 'two',
+            3: 'three',
+            4: 'four',
+            5: 'five',
+            6: 'six',
+            7: 'seven',
+            8: 'eight',
+            9: 'nine',
+            10: 'ten',
+            11: 'eleven',
+            12: 'twelve',
+            13: 'thirteen',
+            14: 'fourteen',
+            15: 'fifteen',
+            16: 'sixteen',
+            17: 'seventeen',
+            18: 'eighteen',
+            19: 'nineteen',
+            20: 'twenty',
+            21: 'twentyone',
+            22: 'twentytwo',
+            23: 'twentythree',
+            24: 'twentyfour',
+            25: 'twentyfive',
+            26: 'twentysix',
+            27: 'twentyseven',
+            28: 'twentyeight',
+            29: 'twentynine',
+            30: 'thirty',
+            31: 'thirtyone',
+            32: 'thirtytwo',
+            33: 'thirtythree',
+            34: 'thirtyfour',
+            35: 'thirtyfive',
+            36: 'thirtysix',
+            37: 'thirtyseven',
+            38: 'thirtyeight',
+            39: 'thirtynine',
+            40: 'forty',
+            41: 'fortyone',
+            42: 'fortytwo',
+            43: 'fortythree',
+            44: 'fortyfour',
+            45: 'fortyfive',
+            46: 'fortysix',
+            47: 'fortyseven',
+            48: 'fortyeight',
+            49: 'fortynine',
+            50: 'fifty',
+            51: 'fiftyone',
+            52: 'fiftytwo',
+            53: 'fiftythree',
+            54: 'fiftyfour',
+            55: 'fiftyfive',
+            56: 'fiftysix',
+            57: 'fiftyseven',
+            58: 'fiftyeight',
+            59: 'fiftynine',
+            60: 'sixty',
+            61: 'sixtyone',
+            62: 'sixtytwo',
+            63: 'sixtythree',
+            64: 'sixtyfour',
+            65: 'sixtyfive',
+            66: 'sixtysix',
+            67: 'sixtyseven',
+            68: 'sixtyeight',
+            69: 'sixtynine',
+            70: 'seventy',
+            71: 'seventyone',
+            72: 'seventytwo',
+            73: 'seventythree',
+            74: 'seventyfour',
+            75: 'seventyfive',
+            76: 'seventysix',
+            77: 'seventyseven',
+            78: 'seventyeight',
+            79: 'seventynine',
+            80: 'eighty',
+            81: 'eightyone',
+            82: 'eightytwo',
+            83: 'eightythree',
+            84: 'eightyfour',
+            85: 'eightyfive',
+            86: 'eightysix',
+            87: 'eightyseven',
+            88: 'eightyeight',
+            89: 'eightynine',
+            90: 'ninety',
+            91: 'ninetyone',
+            92: 'ninetytwo',
+            93: 'ninetythree',
+            94: 'ninetyfour',
+            95: 'ninetyfive',
+            96: 'ninetysix',
+            97: 'ninetyseven',
+            98: 'ninetyeight',
+            99: 'ninetynine',
+            100: 'onehundred'
+        };
+
+        // Helper for Creating array of string for the grid-area
+        const newArr = new Array(10).fill(0).map((_x, index) => {
+            const subArray = numbers.slice(index * 10, index * 10 + 10);
+
+            if (index % 2) {
+                return subArray.reverse().join(' ');
+            } else {
+                return subArray.join(' ');
+            }
+
+        });
+
+        // Multiplication Table
+
+        const multiplicationTable = (row, col) => {
+            return [...Array(row)].map((_x, rowIndex) =>
+                [...Array(col)].map((_y, colIndex) =>
+                    (rowIndex + 1) * (colIndex + 1)));
+        }
+
+        // Wild wild west - Directions Reduction
+
+        function dirReduc(arr) {
+            const oppositeSides = { 'NORTH': 'SOUTH', 'SOUTH': 'NORTH', 'WEST': 'EAST', 'EAST': 'WEST' };
+
+            return arr.reduce((acum, value) => {
+                if (oppositeSides[value] === acum[acum.length - 1]) {
+                    return acum.slice(0, -1);
+                } else {
+                    return [...acum, value];
+                }
+            }, []);
+        }
+
+        // IQ test - find evenness imposter
+        function iqTest(numbers) {
+            const hasInvalidChars = numbers.split(' ').some(arg => isNaN(arg));
+            if (hasInvalidChars) return 'Only numbers may be provided in an argument string';
+
+            const obj = numbers.split(' ').reduce((acum, value, index) => {
+                if (value % 2) {
+                    return {
+                        ...acum,
+                        odds: [...(acum.odds || []), index + 1]
+                    }
+                } else {
+                    return {
+                        ...acum,
+                        evens: [...(acum.evens || []), index + 1]
+                    }
+                }
+            }, {});
+
+            return obj.odds.length === 1 ? obj.odds[0] : obj.evens[0];
+        }
+
+        // IQ test - refactored
+        function iqTest2(numbers) {
+            const grouped = numbers.split(' ').reduce((acum, value, index) => (
+                value % 2 ?
+                    { ...acum, odds: [...(acum.odds || []), index + 1] } :
+                    { ...acum, evens: [...(acum.evens || []), index + 1] }
+            ), {});
+
+            return grouped.odds.length === 1 ? grouped.odds[0] : grouped.evens[0];
+        }
+
+        function iqTest3(numbers) {
+            const arr = numbers.split(' ');
+
+            const odds = arr.filter(number => number % 2);
+            const evens = arr.filter(number => !(number % 2));
+
+            if (odds.length === 1) {
+                return arr.findIndex(number => number === odds[0]);
+            } else {
+                return arr.findIndex(number => number === evens[0]);
+            }
+        }
+
+        // Multiplication Table - single argument
+        const multiplicationTable2 = size =>
+            [...Array(size)].map((_x, rowIndex) =>
+                [...Array(size)].map((_y, colIndex) => (colIndex + 1) * (rowIndex + 1)));
+
+        // A Rule of Divisibility by 13
+        function thirt(n) {
+            const pattern = [1, 10, 9, 12, 3, 4];
+            let prevResult;
+
+            const calculate = num => {
+                const result = num
+                    .toString()
+                    .split('')
+                    .reverse()
+                    .reduce((acum, value, index) => acum + value * pattern[index % pattern.length], 0);
+
+                if (result !== prevResult) {
+                    prevResult = result;
+                    return calculate(result);
+                } else {
+                    return result;
+                }
+            };
+
+            return calculate(n);
+        }
+
+        // Kebabize - cameCase to kebabCase
+        const kebabize = str =>
+            [...str]
+                .filter(char => isNaN(char))
+                .map((char, index) => {
+                    if (index !== 0 && char.toUpperCase() === char) {
+                        return `-${char.toLowerCase()}`;
+                    } else {
+                        return char.toLowerCase();
+                    }
+                }).join('');
+
+        // console.log(kebabize('CamelsHave3HumpsLukaPastva'));
+        // camels-have-humps
+
+        // Extract File Name (Regex)
+        class FileNameExtractor {
+            static extractFileName(dirtyFileName) {
+                const fileNameIndex = dirtyFileName.indexOf('_') + 1;
+                const ext2Index = dirtyFileName.lastIndexOf('.');
+                const result = dirtyFileName.slice(fileNameIndex, ext2Index);
+
+                return result;
+            }
+        }
+
+        // Meeting
+        function meeting(s) {
+            return s.split(';')
+                .map(data => {
+                    const [name, lastName] = data.split(':');
+                    return {
+                        name: name.toUpperCase(),
+                        lastName: lastName.toUpperCase()
+                    }
+                }).sort((a, b) => {
+                    if (a.lastName > b.lastName) {
+                        return 1;
+                    } else {
+                        if (a.lastName === b.lastName) {
+                            if (a.name > b.name) {
+                                return 1;
+                            } else {
+                                return -1;
+                            }
+                        } else {
+                            return -1;
+                        }
+                    }
+                }).map(person => `(${person.lastName}, ${person.name})`)
+                .join('');
+        }
+
+        // Meeting - refactor 1
+        function meeting2(s) {
+            return s.toUpperCase()
+                .split(';')
+                .map(person => person.split(':').reverse().join(' '))
+                .sort()
+                .map(person => {
+                    const [lastName, firstName] = person.split(' ');
+                    return `(${lastName}, ${firstName})`;
+                }).join('');
+        }
+
+        // Meeting refactor 2
+        const meeting3 = s => {
+            const string = s.toUpperCase()
+                .split(';')
+                .map(person => person.split(':').reverse().join(', '))
+                .sort()
+                .join(')(');
+            return `(${string})`;
+        }
+
+        // console.log(meeting3('Alexis:Wahl;Ben:Wahl;John:Bell;Victoria:Schwarz;Abba:Dorny;Grace:Meta;Ann:Arno;Madison:STAN;Alex:Cornwell;Lewis:Kern;Megan:Stan;Alex:Korn'))
+
+        // Sum of pairs - PASSED TESTS BUT DIDN'T WANT TO PASS 'ATTEMPT' - Execution Timed Out (12000 ms)
+        const sumPairs = (ints, s) => {
+            const results = ints
+                .reduce((acum, value, index, array) => {
+                    const target = s - value;
+                    const targetIndex = array.indexOf(target, index + 1);
+
+                    if (targetIndex !== -1) {
+                        return [
+                            ...acum,
+                            {
+                                firstIndex: index,
+                                secondIndex: targetIndex
+                            }
+                        ];
+                    } else {
+                        return acum;
+                    }
+                }, []);
+
+            if (results.length === 0) return;
+
+
+            const resultObj = results.sort((a, b) => {
+                if (a.secondIndex > b.secondIndex) {
+                    return 1;
+                } else {
+                    return -1
+                }
+            })[0];
+
+            return [resultObj.firstIndex, resultObj.secondIndex].map(x => ints[x]);
+        };
+
+        // Refactored - FORFEIT
+        const sumPairs2 = (ints, s) => {
+            const pairs = {};
+
+            for (const int of ints) {
+                if (pairs[s - int]) {
+                    return [s - int, int];
+                } else {
+                    pairs[int] = true;
+                }
+            }
+        }
+
+        const sumPairs3 = (ints, s) => {
+            const pairs = [];
+
+            for (const int of ints) {
+                if (pairs.includes(s - int)) {
+                    return [s - int, int];
+                } else {
+                    pairs.push(int);
+                }
+            }
+        }
+
+        // console.log(sumPairs3([1, 4, 8, 7, 3, 15], 8));
+
+
+        // Tortoies race!!
+        // function race(v1, v2, g) {
+        //     if ( v1 > v2 ) return null;
+
+        //     class Tortoise {
+        //         constructor(speed, position) {
+        //             this.speed = speed;
+        //             this.position = position;
+        //         }
+        //     }
+
+        //     // Checkpoint 1 - t2 arrived at 'g' 
+        //     // How much time passed since the start?
+        //     let seconds = (g / v2) * 3600;
+        //     // What is the position of t1 at that moment
+        //     const checkpoint1T1Pos = v1 * (seconds / 3600) + g;
+        //     const t1 = new Tortoise(v1, checkpoint1T1Pos);
+        //     const t2 = new Tortoise(v2, g);
+
+        //     // How much did the distance between tortoise 
+        //     // reduce until the first checkpoint?
+        //     const currentDistance = t1.position - t2.position;
+        //     const distanceReducedBy = 100 - (currentDistance / g * 100);
+        //     const final = Math.round(100 / distanceReducedBy * seconds);
+
+        //     console.log(final);
+
+        //     const h = Math.floor(final / 3600);
+        //     const m = Math.floor(final % 3600 / 60);
+        //     const s = Math.round(final % 3600 % 60);
+
+        //     return [h, m, s];
+        // }
+
+        function race(v1, v2, g) {
+            if (v1 > v2) return null;
+
+            const time = (g / (v2 - v1)) * 3600;
+
+            const hours = Math.floor(time / 3600);
+            const mins = Math.floor(time % 3600 / 60); // 2h == 7200 / 60 === 120min
+            const secs = Math.floor(time % 3600 % 60);
+
+            return [hours, mins, secs];
+        }
+
+        // aco - 100km/h
+        // luka - 200km/h
+        // 100km
+
+        // 300 / (200 - 100) = 3
+
+        // console.log(race(720, 850, 70));
+        // console.log(race(80, 91, 37));
+        // console.log(race(820, 850, 550));
+        // console.log(race(720, 850, 37));
+
+        function encode(string) {
+            const pattern = {
+                'a': 1,
+                'e': 2,
+                'i': 3,
+                'o': 4,
+                'u': 5
+            };
+
+            return string.replace(/[aeiou]/gi, m => pattern[m.toLowerCase()]);
+        }
+
+        function decode(string) {
+            const pattern = {
+                1: 'a',
+                2: 'e',
+                3: 'i',
+                4: 'o',
+                5: 'u'
+            };
+
+            return string.replace(/[12345]/gi, m => pattern[m]);
+        }
+
+        // console.log(encode('HOw are you today?'));
+        // console.log(decode('h2ll4'))
+
+        // Help the bookseller
+        function stockList(listOfArt, listOfCat) {
+            if (!listOfArt.length || !listOfCat.length) return '';
+
+            return listOfCat.reduce((acum, value) => {
+                const booksInCat = listOfArt
+                    .filter(book => book[0] === value)
+                    .reduce((acum, value) => acum + Number(value.split(' ')[1]), 0);
+
+                return [...acum, `(${value} : ${booksInCat})`];
+            }, []).join(' - ');
+        }
+
+        function stockList2(listOfArt, listOfCat) {
+            if (!listOfArt.length || !listOfCat.length) return;
+
+            return listOfCat.map(cat => {
+                const booksInCat = listOfArt
+                    .filter(book => book[0] === cat)
+                    .reduce((acum, cat) => acum + Number(cat.split(' ')[1]), 0);
+
+                return `(${cat} : ${booksInCat})`;
+            }).join(' - ');
+        }
+
+        // "(A : 200) - (B : 1140)"
+
+        // console.log(stockList(["ABAR 200", "CDXE 500", "BKWR 250", "BTSQ 890", "DRTY 600"], ["A", "B"]));
+        // console.log(stockList2(["CBART 20", "CDXEF 50", "BKWRK 25", "BTSQZ 89", "DRTYM 60"], ["A", "B", "C", "W"]));
+
+        // res = "(A : 0) - (B : 114) - (C : 70) - (W : 0)"
+
+        // Strings Mix
+        function mix(s1, s2) {
+            const data = {};
+            const s1Obj = s1.match(/[a-z]/g);
+            const s2Obj = s2.match(/[a-z]/g);
+
+            for (const char of s1Obj) {
+                data[char] = { s1: data[char] ? (data[char]['s1'] + 1) : 1 }
+            }
+
+            for (const char of s2Obj) {
+                data[char] = {
+                    ...data[char],
+                    s2: data[char] ? (data[char]['s2'] ? data[char]['s2'] + 1 : 1) : 1
+                }
+            }
+
+            for (const char of Object.keys(data)) {
+                const { s1, s2 } = data[char];
+
+                data[char] = {
+                    count: Math.max(s1 || 0, s2 || 0),
+                    sign: (s1 || 0) > (s2 || 0) ? 1 : (s1 === s2 ? 3 : 2)
+                }
+            }
+
+            const result = Object.entries(data)
+                .filter(data => data[1].count > 1)
+                .sort((a, b) => {
+                    const prev = { char: a[0], count: a[1].count, sign: a[1].sign };
+                    const next = { char: b[0], count: b[1].count, sign: b[1].sign };
+
+                    if (prev.count < next.count) {
+                        return 1;
+                    } else if (prev.count > next.count) {
+                        return -1;
+                    } else {
+                        if (prev.sign > next.sign) {
+                            return 1;
+                        } else if (prev.sign < next.sign) {
+                            return -1;
+                        } else {
+                            return prev.char > next.char ? 1 : -1
+                        }
+                    }
+                })
+                .map(data => {
+                    const char = data[0];
+                    const { count, sign } = data[1];
+                    const str = [...Array(count)].map(_x => char).join('');
+
+                    return `${sign === 3 ? '=' : sign}:${str}`;
+                })
+                .join('/');
+
+            return result;
+        }
+
+        // console.log(mix(" In many languages", " there's a pair of functions"));
+
+        // AU Phone Validation
+        function phoneValidation(num) {
+            if (num.match(/^\d{3}[-]\d{3}[-]\d{4}$/))
+                return num;
+
+            const stripped = num.replace(/\s/g, '');
+
+            if (stripped.match(/^\d{10}$/)) {
+                return [...stripped].map((char, index) =>
+                    index === 2 || index === 5 ? `${char}-` : char
+                ).join('');
+            } else {
+                return console.error('INVALID FORMAT!');
+            }
+        }
+
+        // console.log(phoneValidation('123 456 7890'));
+
+        // Mexican Wave
+
+        const wave = str => [...str].map((char, index, array) => [
+            ...array.slice(0, index),
+            array[index].toUpperCase(),
+            ...array.slice(index + 1)
+        ].join('')
+        ).filter(str => ![...str].every(char => char.toLowerCase() === char));
+
+        // Solution with reduce()
+        const wave2 = str =>
+            [...str].reduce((acum, value, index, array) => {
+                if (value === ' ') {
+                    return acum;
+                } else {
+                    return [
+                        ...acum,
+                        [
+                            ...array.slice(0, index),
+                            array[index].toUpperCase(),
+                            ...array.slice(index + 1)
+                        ].join('')
+                    ]
+                }
+            }, []);
+
+
+        // console.log(wave2("gap gapz"));
+
+        function fight(robot1, robot2, tactics) {
+            const robots = [robot1, robot2];
+
+            for (const [index, robot] of robots.entries()) {
+                const enemy = index === 0 ? robot2 : robot1;
+                for (const tactic of robot.tactics) {
+                    if (enemy.health > 0) {
+                        enemy.health -= tactics[tactic];
+                        enemy.wasHit = (enemy.wasHit || 0) + 1;
+                    }
+                }
+            }
+
+            // Checking if only one robot is dead and another one is alive
+            if (robot1.health <= 0 && robot2.health > 0) {
+                return `${robot2.name} has won the fight.`;
+            } else if (robot2.health <= 0 && robot1.health > 0) {
+                return `${robot1.name} has won the fight.`;
+            }
+
+            // Checking if both robots are alive
+            if (robot1.health > 0 && robot2.health > 0) {
+                if (robot1.health > robot2.health) {
+                    return `${robot1.name} has won the fight.`;
+                } else {
+                    if (robot1.health === robot2.health) {
+                        return 'The fight was a draw.';
+                    } else {
+                        return `${robot2.name} has won the fight.`;
+                    }
+                }
+            }
+
+            // If both robots would be dead in the end
+            if (robot1.wasHit > robot2.wasHit) {
+                return `${robot1.name} has won the fight.`;
+            } else if (robot1.wasHit === robot2.wasHit) {
+                if (robot1.speed > robot2.speed) {
+                    return `${robot1.name} has won the fight.`;
+                } else {
+                    if (robot1.speed === robot2.speed) {
+                        return `${robot1.name} has won the fight.`;
+                    } else {
+                        return `${robot2.name} has won the fight.`;
+                    }
+                }
+            } else {
+                return `${robot2.name} has won the fight.`;
+            }
+        }
+
+        robot1 = { name: 'Rocky', health: 100, speed: 20, tactics: [] };
+        robot2 = {
+            name: 'Missile Bob',
+            health: 100,
+            speed: 21,
+            tactics: ['missile', 'missile', 'missile', 'missile']
+        };
+        tactics = { "punch": 20, "laser": 30, "missile": 35 };
+
+        // console.log(fight2(robot1, robot2, tactics));
+
+        function fight2(robot1, robot2, tactics) {
+            let noWeapons = false;
+            const checkWinner = () => {
+                if (noWeapons) {
+                    return robot1.health > robot2.health ? robot1.name : (robot1.health < robot2.health ? robot2.name : 'draw');
+                }
+
+                if (robot1.health <= 0 || robot2.health <= 0) {
+                    return robot1.health <= 0 ? robot2.name : robot1.name;
+                }
+            };
+
+            // Checking which robot goes first
+            if (robot1.speed < robot2.speed) {
+                [robot2, robot1] = [robot1, robot2];
+            }
+
+            // The Fight starts!
+            while (robot1.health > 0 && robot2.health > 0) {
+                // Robot 1 shoots!
+                robot2.health -= tactics[robot1.tactics.shift()] || 0;
+                if (robot2.health <= 0) {
+                    break;
+                }
+
+                // Robot 2 shoots!
+                robot1.health -= tactics[robot2.tactics.shift()] || 0;
+                if (robot1.health <= 0) {
+                    break;
+                }
+
+                // No weapons left
+                if (robot1.tactics.length === 0 && robot2.tactics.length === 0) {
+                    noWeapons = true;
+                    break;
+                }
+            }
+
+            return checkWinner() === 'draw' ?
+                'The fight was a draw.' :
+                (checkWinner() === robot1.name ?
+                    robot1.name :
+                    robot2.name) + ' has won the fight.';
+        }
+
+        // Find All - sum of digits (29/01/2020)
+        function findAll(n, k) {
+            let currentNumber = Math.pow(10, k - 1);
+            const start = currentNumber;
+            const results = [];
+
+
+            while ((currentNumber + '').length === k) {
+                const sum = [...currentNumber.toString()].reduce((acum, value) => acum + +value, 0);
+
+                if (sum === n) {
+                    results.push(currentNumber);
+                }
+
+                currentNumber++;
+            }
+
+            const final = [...new Set(results.map(result => [...result + ''].sort().join('')))].filter(x => Number(x) >= start);
+
+            if (final.length === 0) {
+                return [];
+            } else {
+                return [final.length, final[0], final[final.length - 1]];
+            }
+        }
+
+        // console.log(findAll(10, 3))
+
+        // Extract the domain (01/02/2021)
+        function domainName(url) {
+            //your code here
+        }
+
+        
+
+    </script>
+    <script src="specs/test.js"></script>
+</body>
+
+</html>
