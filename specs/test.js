@@ -1,63 +1,3 @@
-describe('shuffleTest', () => {
-    it('shouldn\'t change the array length', () => {
-        let a = [1, 2, 3, 4, 5];
-        shuffle2(a);
-        expect(a.length).toEqual(5);
-    })
-});
-
-describe('rangeTest', () => {
-    it('should return [1, 2, 3] for 1 to 4 range', () => {
-        expect(range(1, 4)).toEqual([1, 2, 3]);
-    })
-});
-
-describe('factorialByRangeTest', () => {
-    it('should should return 120 for 5', () => {
-        expect(factorialByRange(5)).toEqual(120);
-    })
-});
-
-describe('myMapTest', () => {
-    it('shouldn\'t change the array length', () => {
-        let arr = [1, 2, 3];
-        myMap(dupArr, (x) => x * 2);
-        expect(arr.length).toEqual(3);
-    });
-});
-
-describe('uniqueInOrderTest', () => {
-    it("should return ['A','B','C','D','A','B'] for AAAABBBCCDAABBB", () => {
-        expect(uniqueInOrder('AAAABBBCCDAABBB')).toEqual(['A', 'B', 'C', 'D', 'A', 'B']);
-    });
-
-    it("should return ['A', 'B', 'C', 'c', 'A', 'D'] for ABBCcAD", () => {
-        expect(uniqueInOrder('ABBCcAD')).toEqual(['A', 'B', 'C', 'c', 'A', 'D']);
-    });
-
-    it("should return [1,2,3] for [1,2,2,3,3]", () => {
-        expect(uniqueInOrder([1, 2, 2, 3, 3])).toEqual([1, 2, 3]);
-    });
-});
-
-describe('persistenceTest', () => {
-    it("should return 3 for 39", () => {
-        expect(persistence(39)).toEqual(3);
-    });
-
-    it("should return 4 for 999", () => {
-        expect(persistence(999)).toEqual(4);
-    });
-
-    it("should return 0 for 4", () => {
-        expect(persistence(4)).toEqual(0);
-    });
-
-    it("should return 1 for 22", () => {
-        expect(persistence(22)).toEqual(1);
-    });
-});
-
 describe('countTest', () => {
     it("should return {'a': 2, 'b': 1} for 'aba'", () => {
         expect(count('aba')).toEqual({ 'a': 2, 'b': 1 });
@@ -148,4 +88,22 @@ describe('waveTest', () => {
     it('should return ["Hello", "hEllo", "heLlo", "helLo", "hellO"] for "hello"', () => {
         expect(wave('hello')).toEqual(result);
     })
+});
+
+describe('domainNameTest', () => {
+    it("should return 'google' for 'http://google.com'", () => {
+        expect(domainName('http://google.com')).toEqual('google');
+    });
+
+    it("should return 'google' for 'http://google.co.jp'", () => {
+        expect(domainName('http://google.co.jp')).toEqual('google');
+    });
+
+    it("should return 'xakep' for 'www.xakep.ru'", () => {
+        expect(domainName('www.xakep.ru')).toEqual('xakep');
+    });    
+
+    it("should return 'xakep' for 'https://youtube.com'", () => {
+        expect(domainName('https://youtube.com')).toEqual('youtube');
+    });    
 });
