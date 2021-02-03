@@ -1084,27 +1084,76 @@
         /* ----------------------------------------------- */
 
         // Perfect Power (01/02/2021)
-        const isPP = n => {
-            // FAIL
-        }
 
         // SOLUTION:
+        // function isPP(n) {
+        //     for (var m = 2; m * m <= n; ++m)
+        //         for (var k = 2; Math.pow(m, k) <= n; ++k)
+        //             if (Math.pow(m, k) == n) return [m, k];
+        //     return null;
+        // }
+
         function isPP(n) {
-            for (var m = 2; m * m <= n; ++m)
-                for (var k = 2; Math.pow(m, k) <= n; ++k)
-                    if (Math.pow(m, k) == n) return [m, k];
-            return null;
-        }
-
-        var isPP = function (n) {
-            for (var m = 2; m <= Math.floor(Math.sqrt(n)); ++m) {
-                var k = Math.round(Math.log(n) / Math.log(m))
-                if (Math.pow(m, k) == n) return [m, k];
+            for ( let i = 2; i * i <= n; i++ ) {
+                for ( let j = 2; Math.pow(i, j) <= n; j++ ) {
+                    if ( Math.pow(i, j) === n ) {
+                        return [i, j];
+                    }
+                }
             }
+
             return null;
         }
 
-        // console.log(isPP(27))
+        // console.log(isPP(625))
+
+        /* ----------------------------------------------- */
+
+        // Backspaces in string
+        function cleanString(s) {
+            // let final = s;
+
+            // while (final.includes('#')) {
+            //     final = final.replace(/\w+#+/, (match) => {
+            //         let matchArr = [...match];
+            //         const hashtagsCount = match.match(/#+/)[0].length;
+            //         matchArr.splice(-hashtagsCount * 2);
+            //         return matchArr.join('');
+            //     });
+            // }
+
+            // return final;
+
+            // const result = [];
+            
+            // [...s].forEach(char => {
+            //     if ( char === '#' ) {
+            //         result.pop();
+            //     } else {
+            //         result.push(char);
+            //     }
+            // });
+
+            const result = [...s].reduce((acum, value) => {
+                if ( value === '#' ) {
+                    return acum.slice(0, -1);
+                } else {
+                    return acum + value;
+                }
+            }, '');
+
+            // const result = [...s].reduce((acum, value) => {
+            //     if ( value === '#' ) {
+            //         return acum.slice(0, -1);
+            //     } else {                    
+            //         return [...acum, value];
+            //     }
+            // }, []).join('');
+
+            return result;
+        };
+
+        // console.log(cleanString('ab#c##d'));
 
     </script>
     <script src="specs/test.js"></script>
