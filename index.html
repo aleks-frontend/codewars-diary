@@ -1094,9 +1094,9 @@
         // }
 
         function isPP(n) {
-            for ( let i = 2; i * i <= n; i++ ) {
-                for ( let j = 2; Math.pow(i, j) <= n; j++ ) {
-                    if ( Math.pow(i, j) === n ) {
+            for (let i = 2; i * i <= n; i++) {
+                for (let j = 2; Math.pow(i, j) <= n; j++) {
+                    if (Math.pow(i, j) === n) {
                         return [i, j];
                     }
                 }
@@ -1125,7 +1125,7 @@
             // return final;
 
             // const result = [];
-            
+
             // [...s].forEach(char => {
             //     if ( char === '#' ) {
             //         result.pop();
@@ -1135,7 +1135,7 @@
             // });
 
             const result = [...s].reduce((acum, value) => {
-                if ( value === '#' ) {
+                if (value === '#') {
                     return acum.slice(0, -1);
                 } else {
                     return acum + value;
@@ -1154,6 +1154,138 @@
         };
 
         // console.log(cleanString('ab#c##d'));
+
+        // Recursion testing - 04/02/2021
+        let company = { // the same object, compressed for brevity
+            sales: [{ name: 'John', salary: 1000 }, { name: 'Alice', salary: 1600 }],
+            development: {
+                sites: {
+                    siteA: [{ name: 'Peter', salary: 2000 }, { name: 'Alex', salary: 1800 }],
+                    siteB: [{ name: 'Aco', salary: 2000 }, { name: 'Alex', salary: 1800 }]
+                },
+                internals: [{ name: 'Jack', salary: 1300 }]
+            }
+        };
+
+        function sumSalaries(department) {
+            if (Array.isArray(department)) {
+                return department.reduce((acum, value) => acum + value.salary, 0);
+            } else {
+                let sum = 0;
+                for (const subDepartment of Object.values(department)) {
+                    sum += sumSalaries(subDepartment);
+                }
+
+                return sum;
+            }
+        }
+
+        // console.log(sumSalaries(company));
+
+        function monthNaming(str) {
+            // 02-12-2021
+            const regexp = /(?<date>\d{2})-(?<month>\d{2})-(?<year>\d{4})/g;
+            const results = str.matchAll(regexp);
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const fullDates = [];
+
+            for (const result of results) {
+                let { date, month, year } = result.groups;
+                fullDates.push(`${date}-${monthNames[+month - 1]}-${year}`);
+            }
+
+            return fullDates;
+        }
+
+        function monthNaming2(str) {
+            // 02-12-2021
+            const regexp = /(?<date>\d{2})-(?<month>\d{2})-(?<year>\d{4})/g;
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            return str.replace(regexp, `$<date>.$<month>.$<year>`);
+        }
+
+        // console.log(monthNaming2('02-12-2021 17-05-1991'));
+
+        // Training on sort - 05/02/2021
+        function sortByName(ary) {
+            const convertNumToString = num => {
+                const units = {
+                    0: 'zero',
+                    1: 'one',
+                    2: 'two',
+                    3: 'three',
+                    4: 'four',
+                    5: 'five',
+                    6: 'six',
+                    7: 'seven',
+                    8: 'eight',
+                    9: 'nine',
+                    10: 'ten',
+                    11: 'eleven',
+                    12: 'twelve',
+                    13: 'thirteen',
+                    14: 'fourteen',
+                    15: 'fifteen',
+                    16: 'sixteen',
+                    17: 'seventeen',
+                    18: 'eighteen',
+                    19: 'nineteen',
+                    20: 'twenty'
+                };
+
+                const tens = {
+                    2: 'twenty',
+                    3: 'thirty',
+                    4: 'forty',
+                    5: 'fifty',
+                    6: 'sixty',
+                    7: 'seventy',
+                    8: 'eighty',
+                    9: 'ninety'
+                };
+
+                const numberOfDigits = String(num).length;
+
+                if (numberOfDigits === 1) {
+                    return units[num];
+                } else if (numberOfDigits === 2) {
+                    if (num <= 20) {
+                        return units[num];
+                    } else {
+                        const [firstDigit, secondDigit] = String(num);
+
+                        if (secondDigit === '0') {
+                            return tens[firstDigit];
+                        } else {
+                            return `${tens[firstDigit]} ${units[secondDigit] === 'zero' ? '' : units[secondDigit]}`;
+                        }
+                    }
+                } else {
+                    const [firstDigit, secondDigit, thirdDigit] = String(num);
+                    const segmentOne = `${units[firstDigit]} hundered`;
+                    let segmentTwo = '';
+
+                    if (Number(`${secondDigit}${thirdDigit}`) <= 20) {
+                        segmentTwo = units[Number(`${secondDigit === '0' ? '' : secondDigit}${thirdDigit}`)];
+                    } else {
+                        if (thirdDigit === '0') {
+                            segmentTwo = tens[secondDigit];
+                        } else {
+                            segmentTwo = `${tens[secondDigit]} ${units[thirdDigit]}`;
+                        }
+                    }
+
+                    return `${segmentOne} ${segmentTwo === 'zero' ? '' : segmentTwo}`;
+                }
+            }
+
+            return ary.sort((prev, next) => (convertNumToString(prev) > convertNumToString(next)) ? 1 : -1);
+        }
+
+        // console.log(sortByName([9, 99, 999]));
+
+
 
     </script>
     <script src="specs/test.js"></script>
