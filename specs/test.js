@@ -107,3 +107,9 @@ describe('domainNameTest', () => {
         expect(domainName('https://youtube.com')).toEqual('youtube');
     });    
 });
+
+describe('incrementStringTest', () => {
+    it("should return 'foo1' for 'foo'", () => {
+        expect(incrementString('foo')).toEqual('foo1');
+    });
+});

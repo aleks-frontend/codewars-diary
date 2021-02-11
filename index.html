@@ -1285,6 +1285,57 @@
 
         // console.log(sortByName([9, 99, 999]));
 
+        // 09/02/2021 - String incrementer
+        function incrementString(strng) {
+            const digits = strng.match(/\d+$/);
+
+            if (!digits) return strng + 1;
+
+            const digitsIndex = digits.index;
+            const digitsStr = digits[0];
+            const incremented = String(Number(digitsStr) + 1);
+
+            if (incremented.length < digitsStr.length) {
+                const result = [...digitsStr].reduce((acum, _value, index) => {
+                    if (incremented[index]) {
+                        return [...acum, incremented[index]];
+                    } else {
+                        return [0, ...acum];
+                    }
+                }, []);
+
+                return strng.slice(0, digitsIndex) + result.join('');
+            } else {
+                return strng.slice(0, digitsIndex) + incremented;
+            }
+        }
+
+        // Winner #1
+        function incrementString2(input) {
+            if (isNaN(Number(input[input.length - 1]))) return input + 1;
+
+            return input.replace(/(0*)(\d+$)/, (match, p1, p2) => {
+                const incremented = String(Number(p2) + 1);
+
+                if (incremented.length > p2.length) {
+                    return p1.slice(0, -1) + incremented;
+                } else {
+                    return p1 + incremented;
+                }
+            })
+        }
+
+        // Winner #2
+        function incrementString3(input) {
+            return input.replace(/([0-8]?)(9*)$/, function (s, d, ns) {
+                return +d + 1 + ns.replace(/9/g, '0');
+            });
+        }
+
+        console.log(incrementString('foo000'));
+        console.log(incrementString2('foo0099'));
+
+
 
 
     </script>
